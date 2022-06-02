@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  mongodb:
+    image: mongo:5.0.8-focal
+    container_name: mongodb
+    volumes:
+      - mongo_db:/data/db
+  backend:
+    build:
+      context: application
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - .env
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+  proxy:
+    image: nginx:1.21.6-alpine
+    container_name: reverse-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./application/templates/:/usr/share/nginx/html/
+      - ./nginx.conf:/etc/nginx/nginx.conf
+volumes:
+  mongo_db:
