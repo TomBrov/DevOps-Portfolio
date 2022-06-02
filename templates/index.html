@@ -45,6 +45,14 @@
             $("#Add-form").show()
         });
 
+        $("#ShowBtn").click(() => {
+            $("#get-form").show()
+        });
+
+        $("#DelBtn").click(() => {
+            $("#del-form").show()
+        });
+
         $("#AddUser").click(() => {
             var dataO = {
                 name: $("#contactName").val(),
@@ -60,6 +68,24 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             });
+            $("#tbodyUsers").html(html);
+        });
+
+        $("#deleteBtn").click(() => {
+            var dataO = {
+                _id: $("#contact").val(),
+            };
+
+            var json = JSON.stringify(dataO);
+            console.log(json)
+            $.ajax({
+                type: "DELETE",
+                url: "http://localhost:8080/api/person",
+                data: json,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+            $("#tbodyUsers").html(html);
         });
     });
 
@@ -89,6 +115,14 @@ tr:nth-of-type(odd) {
     display: none
 }
 
+#get-form{
+    display: none
+}
+
+#del-form{
+    display: none
+}
+
 </style>
 
 <head>
@@ -99,15 +133,28 @@ tr:nth-of-type(odd) {
 </head>
 
 <body>
+    <input id="ShowBtn" type="button" value="get user">
+    <div id="get-form" >
+        <form action="">
+            Contact ID: <input id="contactId" name="_id" type="text">
+            <input id="sendBtn" type="button" value="get user">
+        </form>
+    </div>
 
-    Contact ID: <input id="contactId" name="_id" type="text">
-    <input id="sendBtn" type="button" value="get user">
     <input id="AddBtn" type="button" value="add user">
     <div id="Add-form" >
         <form action="">
             Contact Name: <input id="contactName" name="name" type="text">
             Contact Phone: <input id="contactPhone" name="phone" type="text">
             <input id="AddUser" type="button" value="send">
+        </form>
+    </div>
+
+    <input id="DelBtn" type="button" value="delete user">
+    <div id="del-form" >
+        <form action="">
+            Contact ID: <input id="contact" name="id" type="text">
+            <input id="deleteBtn" type="button" value="delete user">
         </form>
     </div>
     <br>

@@ -10,12 +10,10 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/api/person/<id>', methods=['PUT',  'DELETE', 'GET'])
+@app.route('/api/person/<id>', methods=['PUT', 'GET'])
 def person(id):
     if request.method == 'PUT':
         mongo.update_contact(id)
-    elif request.method == 'DELETE':
-        mongo.delete_contact(id)
     elif request.method == 'GET':
         contact = mongo.get_contact(id)
         return jsonify(contact)
@@ -25,7 +23,6 @@ def person(id):
 def add_user():
     name = request.json['name']
     phone = request.json['phone']
-    print(phone)
     mongo.add_contact(name, phone)
     return '200'
 
@@ -34,6 +31,15 @@ def add_user():
 def collection():
         mycol = mongo.get_contacts()
         return jsonify(mycol)
+
+
+@app.route('/api/person', methods=['DELETE'])
+def delete_user():
+    id = request.json['_id']
+    mongo.delete_contact(id)
+    return '200'
+
+
 
 
 if __name__ == '__main__':

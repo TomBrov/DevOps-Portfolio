@@ -19,9 +19,9 @@ def add_contact(name, phone):
 
 def update_contact(id):
     collection = connection()
-    person = collection.find_one_and_update({'_id':f"{id}"})
-
+    person = collection.update_one({'_id':f"{id}"})
     #update query here
+
 
 
 def delete_contact(id):
@@ -38,6 +38,6 @@ def get_contact(id):
 
 def get_contacts():
     collection = connection()
-    pepole = collection.find({})
-    pepole = list(pepole)
-    return pepole
+    people = collection.find({})
+    people = list(people)
+    return people
