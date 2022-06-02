@@ -1,13 +1,10 @@
 import pymongo
-import os
 
 
 def connection():
-    #MONGO_URI = os.getenv('MONGODB_URI')
-    #myclient = pymongo.MongoClient(f"{MONGO_URI}")
-    myclient = pymongo.MongoClient('mongodb://localhost:27017')
+    myclient = pymongo.MongoClient('mongodb://mongodb:27017')
     mydb = myclient["contacts"]
-    mycol = mydb["customers"]
+    mycol = mydb["personal"]
     return mycol
 
 
