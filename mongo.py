@@ -10,6 +10,7 @@ def connection():
     return mycol
 
 
+
 def add_contact(id):
     collection = connection()
     collection.insert_one(id)
