@@ -29,8 +29,8 @@ def add_user():
 
 @app.route('/api/person', methods=['GET'])
 def collection():
-        mycol = mongo.get_contacts()
-        return jsonify(mycol)
+        full_collection = mongo.get_contacts()
+        return jsonify(full_collection)
 
 
 @app.route('/api/person', methods=['DELETE'])
@@ -38,8 +38,6 @@ def delete_user():
     id = request.json['_id']
     mongo.delete_contact(id)
     return '200'
-
-
 
 
 if __name__ == '__main__':

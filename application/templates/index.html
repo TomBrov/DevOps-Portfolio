@@ -6,7 +6,7 @@
     "use strict";
     $(function () {
             $.ajax({
-                url: "http://backend:8080/api/person",
+                url: "/api/person",
                 success: users => {
                     console.log(users);
                     let html = "";
@@ -24,7 +24,7 @@
 
         $("#sendBtn").click(() => {
             $.ajax({
-                url: "http://backend:8080/api/person/" + $("#contactId").val(),
+                url: "/api/person/" + $("#contactId").val(),
                 error: err => alert("Error: " + err.status),
                 success: user => {
                     console.log(user)
@@ -62,12 +62,11 @@
             console.log(json)
             $.ajax({
                 type: "POST",
-                url: "http://backend:8080/api/person",
+                url: "/api/person",
                 data: json,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             });
-            $("#tbodyUsers").html(html);
         });
 
         $("#deleteBtn").click(() => {
@@ -79,7 +78,7 @@
             console.log(json)
             $.ajax({
                 type: "DELETE",
-                url: "http://backend:8080/api/person",
+                url: "/api/person",
                 data: json,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"

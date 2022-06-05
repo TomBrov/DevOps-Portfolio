@@ -2,7 +2,7 @@ import pymongo
 
 
 def connection():
-    myclient = pymongo.MongoClient('mongodb://mongodb:27017')
+    myclient = pymongo.MongoClient('mongodb://root:root@mongodb:27017')
     mydb = myclient["contacts"]
     mycol = mydb["personal"]
     return mycol
