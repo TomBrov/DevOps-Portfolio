@@ -13,6 +13,8 @@ services:
       context: application
       dockerfile: Dockerfile
     container_name: backend
+    environment:
+      - MONGO_URI=mongodb://root:root@mongodb:27017
     depends_on:
       - mongodb
     links:
