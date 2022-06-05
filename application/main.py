@@ -10,13 +10,19 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/api/person/<id>', methods=['PUT', 'GET'])
-def person(id):
-    if request.method == 'PUT':
-        mongo.update_contact(id)
-    elif request.method == 'GET':
-        contact = mongo.get_contact(id)
-        return jsonify(contact)
+@app.route('/api/person/<personal_id>', methods=['GET'])
+def person(personal_id):
+    contact = mongo.get_contact(personal_id)
+    return jsonify(contact)
+
+
+@app.route('/api/person', methods=['PUT'])
+def update_user():
+    person_id = request.json['id']
+    parameter = request.json['parameter']
+    new_value = request.json['value']
+    mongo.update_contact(person_id, parameter, new_value)
+    return '200'
 
 
 @app.route('/api/person', methods=['POST'])
@@ -30,14 +36,14 @@ def add_user():
 
 @app.route('/api/person', methods=['GET'])
 def collection():
-        full_collection = mongo.get_contacts()
-        return jsonify(full_collection)
+    full_collection = mongo.get_contacts()
+    return jsonify(full_collection)
 
 
 @app.route('/api/person', methods=['DELETE'])
 def delete_user():
-    id = request.json['_id']
-    mongo.delete_contact(id)
+    personal_id = request.json['_id']
+    mongo.delete_contact(personal_id)
     return '200'
 
 

@@ -47,6 +47,10 @@
             $("#Add-form").show()
         });
 
+        $("#UpdateBtn").click(() => {
+            $("#Update-form").show()
+        });
+
         $("#ShowBtn").click(() => {
             $("#get-form").show()
         });
@@ -66,6 +70,25 @@
             console.log(json)
             $.ajax({
                 type: "POST",
+                url: "/api/person",
+                data: json,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+            location.reload(true)
+        });
+
+        $("#updateUser").click(() => {
+            var dataO = {
+                id: $("#contact-ID").val(),
+                parameter: $("#contactParameter").val(),
+                value: $("#contactValue").val()
+            };
+
+            var json = JSON.stringify(dataO);
+            console.log(json)
+            $.ajax({
+                type: "PUT",
                 url: "/api/person",
                 data: json,
                 contentType: "application/json; charset=utf-8",
@@ -127,6 +150,10 @@ tr:nth-of-type(odd) {
     display: none
 }
 
+#Update-form{
+    display: none
+}
+
 </style>
 
 <head>
@@ -137,21 +164,31 @@ tr:nth-of-type(odd) {
 </head>
 
 <body>
-    <input id="ShowBtn" type="button" value="get user">
+    <input id="ShowBtn" type="button" value="Get User">
     <div id="get-form" >
         <form action="">
             Contact ID: <input id="contactId" name="_id" type="text">
-            <input id="sendBtn" type="button" value="get user">
+            <input id="sendBtn" type="button" value="Get User">
         </form>
     </div>
 
-    <input id="AddBtn" type="button" value="add user">
+    <input id="AddBtn" type="button" value="Add User">
     <div id="Add-form" >
         <form action="">
             Contact Name: <input id="contactName" name="name" type="text">
             Contact Phone: <input id="contactPhone" name="phone" type="text">
             Contact Address: <input id="contactAddress" name="address" type="text">
-            <input id="AddUser" type="button" value="send">
+            <input id="AddUser" type="button" value="Add User">
+        </form>
+    </div>
+
+    <input id="UpdateBtn" type="button" value="Update User">
+    <div id="Update-form" >
+        <form action="">
+            Contact ID: <input id="contact-ID" name="name" type="text">
+            Contact Parameter: <input id="contactParameter" name="phone" type="text">
+            Contact Value: <input id="contactValue" name="address" type="text">
+            <input id="updateUser" type="button" value="Update User">
         </form>
     </div>
 
