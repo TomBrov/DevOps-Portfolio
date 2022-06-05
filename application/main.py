@@ -23,7 +23,8 @@ def person(id):
 def add_user():
     name = request.json['name']
     phone = request.json['phone']
-    mongo.add_contact(name, phone)
+    address = request.json['address']
+    mongo.add_contact(name, phone, address)
     return '200'
 
 
