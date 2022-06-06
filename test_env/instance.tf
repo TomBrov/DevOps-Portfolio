@@ -1,9 +1,8 @@
 resource "google_compute_instance" "instance" {
-  name         = var.app_tag
+  name         = "${var.app_tag}-instance"
   machine_type = var.machine_type
   zone         = "${var.region}-a"
-  tags         = [var.owner]
-
+  depends_on = [google_compute_router_nat.nat]
   metadata = {
     enable-oslogin = "TRUE"
   }
