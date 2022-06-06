@@ -20,7 +20,7 @@ def person(personal_id):
 
 @app.route('/api/person', methods=['PUT'])
 def update_user():
-    person_id = request.json['id']
+    person_id = request.json['_id']
     parameter = request.json['parameter']
     new_value = request.json['value']
     mongo.update_contact(person_id, parameter, new_value)
@@ -29,9 +29,9 @@ def update_user():
 
 @app.route('/api/person', methods=['POST'])
 def add_user():
-    name = request.json['name']
-    phone = request.json['phone']
-    address = request.json['address']
+    name = request.json['Name']
+    phone = request.json['Phone']
+    address = request.json['Address']
     mongo.add_contact(name, phone, address)
     return "201 Created"
 

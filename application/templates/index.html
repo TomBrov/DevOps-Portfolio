@@ -61,9 +61,9 @@
 
         $("#AddUser").click(() => {
             var dataO = {
-                name: $("#contactName").val(),
-                phone: $("#contactPhone").val(),
-                address: $("#contactAddress").val()
+                Name: $("#contactName").val(),
+                Phone: $("#contactPhone").val(),
+                Address: $("#contactAddress").val()
             };
 
             var json = JSON.stringify(dataO);
@@ -80,7 +80,7 @@
 
         $("#updateUser").click(() => {
             var dataO = {
-                id: $("#contact-ID").val(),
+                _id: $("#contact-ID").val(),
                 parameter: $("#contactParameter").val(),
                 value: $("#contactValue").val()
             };

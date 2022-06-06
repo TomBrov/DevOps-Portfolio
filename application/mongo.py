@@ -28,7 +28,7 @@ def update_contact(personal_id, parameter, value):
 
 def delete_contact(personal_id):
     collection = connection()
-    person = collection.find_one_and_delete({'_id': f"{personal_id}"})
+    person = collection.find_one({'_id': f"{personal_id}"})
     collection.delete_one(person)
 
 
