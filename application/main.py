@@ -1,3 +1,4 @@
+import http
 from flask import Flask, render_template, request, jsonify
 import mongo
 
@@ -13,7 +14,10 @@ def index():
 @app.route('/api/person/<personal_id>', methods=['GET'])
 def person(personal_id):
     contact = mongo.get_contact(personal_id)
-    return jsonify(contact)
+    if bool(contact):
+        return jsonify(contact)
+    else:
+        return "404 Not Found"
 
 
 @app.route('/api/person', methods=['PUT'])
@@ -22,7 +26,7 @@ def update_user():
     parameter = request.json['parameter']
     new_value = request.json['value']
     mongo.update_contact(person_id, parameter, new_value)
-    return '200'
+    return "200 OK"
 
 
 @app.route('/api/person', methods=['POST'])
@@ -31,7 +35,7 @@ def add_user():
     phone = request.json['phone']
     address = request.json['address']
     mongo.add_contact(name, phone, address)
-    return '200'
+    return "201 Created"
 
 
 @app.route('/api/person', methods=['GET'])
@@ -44,7 +48,7 @@ def collection():
 def delete_user():
     personal_id = request.json['_id']
     mongo.delete_contact(personal_id)
-    return '200'
+    return "200 OK"
 
 
 if __name__ == '__main__':

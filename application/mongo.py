@@ -1,5 +1,3 @@
-import json
-
 import pymongo
 import os
 import uuid
