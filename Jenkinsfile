@@ -5,7 +5,7 @@ pipeline {
             steps {
                 script{
                     deleteDir()
-                    git branch: env.GIT_BRANCH, credentialsId: 'gitlab', url: 'git@github.com:TomBrov/portfolio.git'
+                    git branch: env.GIT_BRANCH, credentialsId: 'github', url: 'git@github.com:TomBrov/portfolio.git'
                     env.RELEASE_NOTES = sh(script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1""", returnStdout:true).trim()
                 }
             }
@@ -21,7 +21,7 @@ pipeline {
         stage ('Test') {
             steps{
                 script{
-                    withCredentials([sshUserPrivateKey(credentialsId: 'AWS_ireland', keyFileVariable: 'SSH_KEY', usernameVariable: 'USERNAME')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'GCP_central', keyFileVariable: 'SSH_KEY', usernameVariable: 'USERNAME')]) {
                        sh '''cd test_env
                             terraform init
                             terraform apply --auto-approve
@@ -42,9 +42,6 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
-                sh '''docker push <gcr_repo>
-                git remote add gitops <url>
-                git push -u gitops'''
             }
         }
     }
