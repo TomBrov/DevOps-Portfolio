@@ -1,12 +1,8 @@
 terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = "~> 3.53.0"
-    }
-  }
-  required_version = ">= 0.13"
+
 }
-provider "aws" {
-  region = var.region
+provider "google" {
+  project = var.project
+  region  = var.region
+  zone    = "${var.region}-a"
 }
