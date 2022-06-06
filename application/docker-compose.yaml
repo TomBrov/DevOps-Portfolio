@@ -17,8 +17,6 @@ services:
       - MONGO_URI=mongodb://root:root@mongodb:27017
     depends_on:
       - mongodb
-    links:
-      - mongodb
   proxy:
     image: nginx:1.21.6-alpine
     container_name: reverse-proxy
