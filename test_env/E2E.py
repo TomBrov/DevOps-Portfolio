@@ -1,5 +1,4 @@
 import requests
-import sys
 
 
 def add_one(person, ip):
@@ -13,7 +12,6 @@ def delete_one(id, ip):
 
 
 def get_all(ip):
-    subjects = []
     headers = {"Accept": "application/json"}
     response = requests.request("GET", url=f'http://{ip}/api/person', headers=headers)
     subjects = []
@@ -23,43 +21,41 @@ def get_all(ip):
 
 
 def update_one(ip, uid, parameter, value):
-    headers = {"Accept": "application/json"}
-    requests.put(url=f"http://{ip}/api/person", headers=headers,
-                 json={'_id': uid, 'parameter': parameter, 'value': value})
+    response = requests.request('PUT', url=f"http://{ip}/api/person",
+                                json={'_id': uid, 'parameter': parameter, 'value': value})
 
 
 def get_one(ip, uid):
     headers = {"Accept": "application/json"}
     response = requests.request("GET", url=f"http://{ip}/api/person/{uid}", headers=headers)
-    return response
+    return response.json()
 
 
 if __name__ == '__main__':
-    # ip = sys.argv[0]
-    ip = 'localhost'
+    ip = sys.argv[0]
     people_list = [{'Name': 'Tom Brovender', 'Phone': '0508710417', "Address": 'Har Shaul 907'},
-                   {'Name': 'Eden Altman', 'Phone': '0546648749', "Address": 'Gary Bartiani'}]
-    param = 'Phone'
+                   {'Name': 'Eden Altman', 'Phone': '0546648749', "Address": 'Gary Bartiani 5'}]
     for person in people_list:
         add_one(person, ip)
     people = get_all(ip)
     if not people:
-        print('Test failed')
+        print("ERROR: Test failed - get wasn't successful")
         exit(1)
     print(people)
     uid = people[0]['_id']
-    print(uid)
+    param = 'Phone'
     parameter_value = people[1][param]
-    # update_one(uid, ip, param, parameter_value)
-    # person = get_one(ip, uid)
-    # if parameter_value != person[param]:
-    #     print('Error - Test failed')
-    #     exit(1)
+    update_one(ip, uid, param, parameter_value)
+    person = get_one(ip, uid)
+    print(person)
+    if parameter_value != person[param]:
+        print("ERROR: Test failed - update wasn't successful")
+        exit(1)
     for person in people:
-        id = person['_id']
-        delete_one(id, ip)
+        uid = person['_id']
+        delete_one(uid, ip)
     people = get_all(ip)
     if people:
-        print('Error - Test failed')
+        print("ERROR: Test failed - deletion wasn't successful")
         exit(1)
-    print('test passed')
+    print('E2E Test Passed Successfully')
