@@ -12,10 +12,10 @@ pipeline {
         }
         stage ('Build') {
             steps {
-                cd application
+                sh '''cd application
                 docker build -t <gcr_repo> .
                 cd ..
-                zip -r test_env/app.zip application/
+                zip -r test_env/app.zip application/''
             }
         }
         stage ('Test') {
@@ -38,15 +38,19 @@ pipeline {
             }
         }
         stage ('Push Image') {
+            when{
+                expression{env.GIT_BRANCH ==~ "master"}
+            }
             steps {
-                docker push <gcr_repo>
-                git push -u gitops
+                sh '''docker push <gcr_repo>
+                git remote add gitops <url>
+                git push -u gitops'''
             }
         }
     }
     post{
         failure{
-            terraform destroy --auto-approve
+            sh '''terraform destroy --auto-approve'''
         }
         success{
         }

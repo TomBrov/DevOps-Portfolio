@@ -3,8 +3,9 @@ resource "google_compute_instance" "instance" {
   machine_type = var.machine_type
   zone         = "${var.region}-a"
   depends_on = [google_compute_router_nat.nat]
+  tags = ["vm-instance"]
   metadata = {
-    enable-oslogin = "TRUE"
+    enable-oslogin = "FALSE"
   }
   boot_disk {
     initialize_params {
@@ -16,7 +17,6 @@ resource "google_compute_instance" "instance" {
 
   network_interface {
     network = google_compute_network.network.id
-
     access_config {
     }
   }
