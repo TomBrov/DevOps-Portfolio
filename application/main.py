@@ -1,7 +1,5 @@
-import http
 from flask import Flask, render_template, request, jsonify
 import mongo
-
 
 app = Flask(__name__)
 

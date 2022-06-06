@@ -15,7 +15,7 @@ def connection():
 def add_contact(name, phone, address):
     collection = connection()
     personal_id = str(uuid.uuid4())[0:8]
-    collection.insert_one({"_id": personal_id, "name": name, "phone": phone, "address": address})
+    collection.insert_one({"_id": personal_id, "Name": name, "Phone": phone, "Address": address})
 
 
 def update_contact(personal_id, parameter, value):
