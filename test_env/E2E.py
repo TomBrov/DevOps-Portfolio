@@ -1,4 +1,5 @@
 import requests
+import sys
 
 
 def add_one(person, ip):
@@ -32,7 +33,7 @@ def get_one(ip, uid):
 
 
 if __name__ == '__main__':
-    ip = sys.argv[0]
+    ip = sys.argv[1]
     people_list = [{'Name': 'Tom Brovender', 'Phone': '0508710417', "Address": 'Har Shaul 907'},
                    {'Name': 'Eden Altman', 'Phone': '0546648749', "Address": 'Gary Bartiani 5'}]
     for person in people_list:
@@ -41,13 +42,11 @@ if __name__ == '__main__':
     if not people:
         print("ERROR: Test failed - get wasn't successful")
         exit(1)
-    print(people)
     uid = people[0]['_id']
     param = 'Phone'
     parameter_value = people[1][param]
     update_one(ip, uid, param, parameter_value)
     person = get_one(ip, uid)
-    print(person)
     if parameter_value != person[param]:
         print("ERROR: Test failed - update wasn't successful")
         exit(1)

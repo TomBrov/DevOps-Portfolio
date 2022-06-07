@@ -6,7 +6,7 @@ pipeline {
                 script{
                     deleteDir()
                     git branch: env.GIT_BRANCH, credentialsId: 'github', url: 'git@github.com:TomBrov/portfolio.git'
-                    env.RELEASE_NOTES = sh(script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1""", returnStdout:true).trim()
+                    env.bool = False
                 }
             }
         }
@@ -27,21 +27,25 @@ pipeline {
                             terraform apply --auto-approve
                             IP=$(terraform output IP | tr "\\"" ":" | cut -d ":" -f2)
                             cd ..
-                            until ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY $USERNAME@$IP "bash -c \\"docker --version\\""; do sleep 5; done
-                            until ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY $USERNAME@$IP "bash -c \\"docker-compose --version\\""; do sleep 5; done
                             scp -o StrictHostKeyChecking=no -v -i $SSH_KEY -p app.zip $USERNAME@$IP:~/app.zip
-                            ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY $USERNAME@$IP "bash -c \\"unzip app.zip && docker-compose up -d\\""
-                            ./E2E.sh $IP
-                            terraform destroy --auto-approve'''
+                            ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY $USERNAME@$IP "bash -c \\"unzip app.zip && docker-compose up -d\\""'''
                     }
+                    sh """ python3 E2E.py $IP
+                    env.success = $?"""
+                    if (env.success == 0){
+                        env.bool = True
+                    }
+                    sh '''terraform destroy --auto-approve'''
                 }
             }
         }
         stage ('Push Image') {
             when{
+                expression{env.bool ==~ True}
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
+
             }
         }
     }

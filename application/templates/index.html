@@ -38,7 +38,6 @@
                                 </tr>`;
                     html += tr;
                     $("#tbodyUsers").html(html);
-                    location.reload(true)
                 }
             });
         });
@@ -75,7 +74,6 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             });
-            location.reload(true)
         });
 
         $("#updateUser").click(() => {
@@ -94,7 +92,6 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             });
-            location.reload(true)
         });
 
         $("#deleteBtn").click(() => {
@@ -111,7 +108,6 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             });
-            location.reload(true)
             $("#tbodyUsers").html(html);
         });
     });
