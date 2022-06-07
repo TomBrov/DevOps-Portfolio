@@ -32,7 +32,7 @@ pipeline {
                             python3 E2E.py $IP'''
                     }
                     env.success = sh(script: "$?", returnStdout:true).trim()
-                    if (env.success == 0){
+                    if (env.success == '0'){
                         env.bool = True
                     }
                     sh '''terraform destroy --auto-approve
@@ -65,7 +65,12 @@ pipeline {
             }
             steps {
                 script{
-                    sh '''echo yes'''
+                    sh '''cd deploy
+                          terraform init
+                          terraform apply --auto-approve
+                          REGION=$(terraform output region | tr "\\"" ":" | cut -d ":" -f2)
+                          gcloud container clusters get-credentials phonebook --region $REGION
+                          '''
                 }
             }
         }

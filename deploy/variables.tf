@@ -1,6 +1,6 @@
 variable "app_tag" {
   type = string
-  default = "phonebook-testing"
+  default = "phonebook"
 }
 
 variable "region" {
