@@ -27,11 +27,11 @@ pipeline {
                             terraform apply --auto-approve
                             IP=$(terraform output IP | tr "\\"" ":" | cut -d ":" -f2)
                             cd ..
-                            scp -o StrictHostKeyChecking=no -v -i $SSH_KEY -p app.zip $USERNAME@$IP:~/app.zip
-                            ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY $USERNAME@$IP "bash -c \\"unzip app.zip && docker-compose up -d\\""'''
+                            gcloud compute scp --strict-host-key-checking=no --ssh-key-file=$SSH_KEY app.zip $USERNAME@$IP:~/app.zip
+                            gcloud compute ssh --strict-host-key-checking=no --ssh-key-file=$SSH_KEY $USERNAME@$IP "bash -c \\"unzip app.zip && docker-compose up -d\\""
+                            python3 E2E.py $IP'''
                     }
-                    sh """ python3 E2E.py $IP
-                    env.success = $?"""
+                    env.success = sh (script: """$?""", returnStdout:true).trim()
                     if (env.success == 0){
                         env.bool = True
                     }
