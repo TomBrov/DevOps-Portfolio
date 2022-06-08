@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    parameters {
+      booleanParam defaultValue: false, name: 'deploy'
+    }
     stages {
         stage ('ENV Prep') {
             steps {
@@ -51,7 +54,7 @@ pipeline {
             }
             steps {
                 script{
-                    if (param.deployed ==~ True){
+                    if (param.deployed ==~ true){
                         sh '''cd deploy
                               terraform init
                               terraform apply --auto-approve
