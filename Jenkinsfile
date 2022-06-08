@@ -1,7 +1,8 @@
 pipeline {
     agent any
-    parameters {
-      booleanParam defaultValue: false, name: 'deploy'
+    environment {
+        env.stage = ""
+        env.deployer = 'false'
     }
     stages {
         stage ('ENV Prep') {
@@ -24,7 +25,7 @@ pipeline {
         stage ('Test') {
             steps{
                 script{
-                   env.bool = 'test'
+                   env.stage = 'test'
                    sh '''cd test_env
                         terraform init
                         terraform apply --auto-approve
@@ -32,7 +33,7 @@ pipeline {
                         INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
                         until gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"docker-compose --version\\""; do sleep 5; done
                         gcloud compute scp --strict-host-key-checking=no app.zip ubuntu@$INSTANCE:~/app.zip
-                        gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
+                        gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"unzip app.zip && cd application && docker-compose up -d\\""
                         until curl $IP; do sleep 5; done
                         python3 E2E.py $IP
                         terraform destroy --auto-approve
@@ -55,21 +56,20 @@ pipeline {
             }
             steps {
                 script{
-                    env.bool = 'deploy'
-                    if (param.deployed ==~ true){
+                    env.stage = 'deploy'
+                    if (){
                         sh '''cd deploy
                               terraform init
                               terraform apply --auto-approve
                               REGION=$(terraform output region | tr "\\"" ":" | cut -d ":" -f2)
-                              INSTANCE_NAME=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
-                              gcloud container clusters get-credentials $INSTANCE_NAME --region $REGION'''
+                              INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
+                              gcloud container clusters get-credentials $INSTANCE --region $REGION'''
                     } else {
                         sh '''cd deploy
                               REGION=$(cat variables.tf | head -8 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
-                              INSTANCE_NAME=$(cat variables.tf | head -3 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
-                              gcloud container clusters get-credentials $INSTANCE_NAME --region $REGION'''
+                              INSTANCE=$(cat variables.tf | head -3 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
+                              gcloud container clusters get-credentials $INSTANCE --region $REGION'''
                     }
-
                 }
             }
         }
@@ -77,9 +77,9 @@ pipeline {
     post{
         failure{
             script{
-                if(env.bool ==~ 'test'){
+                if(env.stage ==~ 'test'){
                     sh '''cd test_env && terraform destroy --auto-approve'''
-                } else if(env.bool ==~ 'deploy'){
+                } else if(env.stage ==~ 'deploy'){
                     sh '''cd deploy && terraform destroy --auto-approve'''
                 }
             }
