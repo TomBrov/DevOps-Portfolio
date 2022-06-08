@@ -1,5 +1,5 @@
 venv
 test_env/.terraform
-deploy/.terraform
+../devops/deploy/.terraform
 .idea
 __pycache__
