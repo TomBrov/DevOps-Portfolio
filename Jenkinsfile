@@ -30,8 +30,8 @@ pipeline {
                         terraform apply --auto-approve
                         IP=$(terraform output IP | tr "\\"" ":" | cut -d ":" -f2)
                         INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
-                        gcloud compute scp --strict-host-key-checking=no app.zip $USERNAME@$INSTANCE:~/app.zip
-                        gcloud compute ssh --strict-host-key-checking=no $USERNAME@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
+                        gcloud compute scp --strict-host-key-checking=no app.zip ubuntu@$INSTANCE:~/app.zip
+                        gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
                         python3 E2E.py $IP
                         terraform destroy --auto-approve
                         cd ..'''
@@ -64,7 +64,7 @@ pipeline {
                     } else {
                         sh '''cd deploy
                               REGION=$(cat variables.tf | head -8 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
-                              INSTANCE_NAME=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
+                              INSTANCE_NAME=$(cat variables.tf | head -3 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
                               gcloud container clusters get-credentials $INSTANCE_NAME --region $REGION'''
                     }
 
