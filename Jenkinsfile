@@ -24,18 +24,16 @@ pipeline {
         stage ('Test') {
             steps{
                 script{
-                    withCredentials([sshUserPrivateKey(credentialsId: 'GCP_central', keyFileVariable: 'SSH_KEY', usernameVariable: 'USERNAME')]) {
-                       sh '''cd test_env
-                            terraform init
-                            terraform apply --auto-approve
-                            IP=$(terraform output IP | tr "\\"" ":" | cut -d ":" -f2)
-                            INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
-                            gcloud compute scp --strict-host-key-checking=no --ssh-key-file=$SSH_KEY app.zip $USERNAME@$INSTANCE:~/app.zip
-                            gcloud compute ssh --strict-host-key-checking=no --ssh-key-file=$SSH_KEY $USERNAME@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
-                            python3 E2E.py $IP
-                            terraform destroy --auto-approve
-                            cd ..'''
-                    }
+                   sh '''cd test_env
+                        terraform init
+                        terraform apply --auto-approve
+                        IP=$(terraform output IP | tr "\\"" ":" | cut -d ":" -f2)
+                        INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
+                        gcloud compute scp --strict-host-key-checking=no app.zip $USERNAME@$INSTANCE:~/app.zip
+                        gcloud compute ssh --strict-host-key-checking=no $USERNAME@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
+                        python3 E2E.py $IP
+                        terraform destroy --auto-approve
+                        cd ..'''
                 }
             }
         }
@@ -59,11 +57,13 @@ pipeline {
                               terraform init
                               terraform apply --auto-approve
                               REGION=$(terraform output region | tr "\\"" ":" | cut -d ":" -f2)
-                              gcloud container clusters get-credentials phonebook --region $REGION'''
+                              INSTANCE_NAME=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
+                              gcloud container clusters get-credentials $INSTANCE_NAME --region $REGION'''
                     } else {
                         sh '''cd deploy
                               REGION=$(cat variables.tf | head -8 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
-                              gcloud container clusters get-credentials phonebook --region $REGION'''
+                              INSTANCE_NAME=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
+                              gcloud container clusters get-credentials $INSTANCE_NAME --region $REGION'''
                     }
 
                 }
