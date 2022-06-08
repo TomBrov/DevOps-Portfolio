@@ -30,6 +30,7 @@ pipeline {
                         terraform apply --auto-approve
                         IP=$(terraform output IP | tr "\\"" ":" | cut -d ":" -f2)
                         INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
+                        until gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"docker-compose --version\\""; do sleep 5; done
                         gcloud compute scp --strict-host-key-checking=no app.zip ubuntu@$INSTANCE:~/app.zip
                         gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
                         python3 E2E.py $IP
