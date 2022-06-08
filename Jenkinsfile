@@ -33,6 +33,7 @@ pipeline {
                         until gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"docker-compose --version\\""; do sleep 5; done
                         gcloud compute scp --strict-host-key-checking=no app.zip ubuntu@$INSTANCE:~/app.zip
                         gcloud compute ssh --strict-host-key-checking=no ubuntu@$INSTANCE --command="bash -c \\"unzip app.zip && cd application &&docker-compose up -d\\""
+                        until curl $IP; do sleep 5; done
                         python3 E2E.py $IP
                         terraform destroy --auto-approve
                         cd ..'''
