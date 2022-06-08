@@ -24,6 +24,7 @@ pipeline {
         stage ('Test') {
             steps{
                 script{
+                   env.bool = 'test'
                    sh '''cd test_env
                         terraform init
                         terraform apply --auto-approve
@@ -52,6 +53,7 @@ pipeline {
             }
             steps {
                 script{
+                    env.bool = 'deploy'
                     if (param.deployed ==~ true){
                         sh '''cd deploy
                               terraform init
@@ -72,8 +74,13 @@ pipeline {
     }
     post{
         failure{
-            sh '''cd test_env && terraform destroy --auto-approve
-                  cd deploy && terraform destroy --auto-approve'''
+            script{
+                if(env.bool ==~ 'test'){
+                    sh '''cd test_env && terraform destroy --auto-approve'''
+                } else if(env.bool ==~ 'deploy'){
+                    sh '''cd deploy && terraform destroy --auto-approve'''
+                }
+            }
         }
         success{
             sh '''echo yes'''
