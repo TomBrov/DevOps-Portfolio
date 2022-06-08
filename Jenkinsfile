@@ -76,6 +76,7 @@ pipeline {
                   cd deploy && terraform destroy --auto-approve'''
         }
         success{
+            sh '''echo yes'''
         }
     }
 }
