@@ -51,12 +51,18 @@ pipeline {
             }
             steps {
                 script{
-                    sh '''cd deploy
-                          terraform init
-                          terraform apply --auto-approve
-                          REGION=$(terraform output region | tr "\\"" ":" | cut -d ":" -f2)
-                          gcloud container clusters get-credentials phonebook --region $REGION
-                          '''
+                    if (param.deployed ==~ True){
+                        sh '''cd deploy
+                              terraform init
+                              terraform apply --auto-approve
+                              REGION=$(terraform output region | tr "\\"" ":" | cut -d ":" -f2)
+                              gcloud container clusters get-credentials phonebook --region $REGION'''
+                    } else {
+                        sh '''cd deploy
+                              REGION=$(cat variables.tf | head -8 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
+                              gcloud container clusters get-credentials phonebook --region $REGION'''
+                    }
+
                 }
             }
         }
