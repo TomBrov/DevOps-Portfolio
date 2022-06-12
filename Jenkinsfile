@@ -56,20 +56,6 @@ pipeline {
             }
             steps {
                 script{
-                    env.stage = 'deploy'
-                    if (){
-                        sh '''cd deploy
-                              terraform init
-                              terraform apply --auto-approve
-                              REGION=$(terraform output region | tr "\\"" ":" | cut -d ":" -f2)
-                              INSTANCE=$(terraform output instance_name | tr "\\"" ":" | cut -d ":" -f2)
-                              gcloud container clusters get-credentials $INSTANCE --region $REGION'''
-                    } else {
-                        sh '''cd deploy
-                              REGION=$(cat variables.tf | head -8 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
-                              INSTANCE=$(cat variables.tf | head -3 | tail -1 | tr "\\"" ":" | cut -d ":" -f2)
-                              gcloud container clusters get-credentials $INSTANCE --region $REGION'''
-                    }
                 }
             }
         }
@@ -79,8 +65,6 @@ pipeline {
             script{
                 if(env.stage ==~ 'test'){
                     sh '''cd test_env && terraform destroy --auto-approve'''
-                } else if(env.stage ==~ 'deploy'){
-                    sh '''cd deploy && terraform destroy --auto-approve'''
                 }
             }
         }
