@@ -1,0 +1,31 @@
+1. Make sure all pre-requisite apps are installed:
+    {{- if .Values.ingress.tls }}
+
+    cert manager - Certificate issuer it is in the demo-crm app helm:
+       helm repo add jetstack https://charts.jetstack.io
+       helm repo update
+       helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.8.0
+       +-------------------------------------------------------------------------------+
+       | recommended values file for cert-manager can be found in demo-crm repo itself |
+       +-------------------------------------------------------------------------------+
+    {{ else }}
+
+    Everything is installed!
+    {{ end }}
+
+2. connect to the app:
+    {{- if .Values.ingress.tls }}
+
+    make sure that your dns is bounded to the given external IP in stage 1
+    app accessible at https://{{ .Values.ingress.host }}
+    {{ else }}
+
+    you did not configure an SSL certificate into your app
+    make sure that your dns is bounded to the given external IP in stage 1
+    app accessible at http://{{ .Values.ingress.host }}
+    {{ end }}
+    Important info for further use:
+    +--------------------------------------------------------------------------------------+
+    | export EXTERNAL_IP=$(kubectl get svc -A | grep nginx | tr " " ":" | cut -d ":" -f13) |
+    | check resources:   kubectl top pods | grep demo-crm                                  |
+    +--------------------------------------------------------------------------------------+

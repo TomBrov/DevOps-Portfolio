@@ -1,0 +1,105 @@
+# Default values for demo-crm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  registry: gcr.io/testing-env-352509/production
+  name: backend
+  tag: latest
+
+container:
+  Port: 8080
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: nginx
+  #clusterissuer name must be the same as certissuer.name
+  #http01-ingress-class must be the same as certissuer.httpClass
+  annotations: {
+    cert-manager.io/cluster-issuer: "letsencrypt",
+    acme.cert-manager.io/http01-ingress-class: "nginx",
+    acme.cert-manager.io/http01-edit-in-place: "true"
+  }
+  host: phonebook.ddns.net
+  secretName: "nginx-proxy-tls"
+  tls: true
+
+secrets:
+  mongoURI: "mongodb://brov:brov@phonebook-mongodb-0.mongo:27017,phonebook-mongodb-1.mongo:27017,phonebook-mongodb-2.mongo:27017"
+
+configmap:
+  log_level: info
+  persistence: true
+
+resources:
+  requests:
+    cpu: "2m"
+    memory: "50Mi"
+  limit:
+    cpu: "5m"
+    memory: "100Mi"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+cronjob:
+  enabled: true
+  #cronjob scheduling
+  cron_block: "* */24 * * *"
+  #command removes all clients in selected db
+  mongo: "mongodb://user:user@phonebook-mongodb-0.mongo:27017/phonebook"
+  #the mongo command we run when we connect
+  command: "db.clients.remove({});"
+  tag: 5.0.8-focal
+
+mongodb:
+  architecture: replicaset
+  replicaCount: 3
+  auth:
+    databases: ['phonebook']
+    usernames: [user]
+    passwords: [user]
+    rootPassword: root
+  service:
+    nameOverride: mongo
+  persistence:
+    storageClass: standard
+    size: 2Gi

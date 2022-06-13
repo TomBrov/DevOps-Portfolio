@@ -1,0 +1,8 @@
+{{- $fullName := include "phonebook.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}
+data:
+  LOG_LEVEL: $"{{ .Values.configmap.log_level }}"
+  PERSISTENCE: $"{{ .Values.configmap.persistence }}"

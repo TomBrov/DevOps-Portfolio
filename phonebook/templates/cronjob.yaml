@@ -1,0 +1,22 @@
+{{- if .Values.cronjob.enabled }}
+{{- $release_name := .Release.Name }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $release_name }}
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongo
+            image: mongo:{{ .Values.cronjob.tag }}
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - -c
+            - mongo --eval {{ .Values.cronjob.command }} {{ .Values.cronjob.mongo }}
+          restartPolicy: OnFailure
+  schedule: "{{ .Values.cronjob.cron_block }}"
+{{- end }}

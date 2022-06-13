@@ -1,0 +1,13 @@
+{{- $fullName := include "phonebook.fullname" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ $fullName }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: {{ .Values.service.protocol }}
