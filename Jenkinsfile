@@ -86,11 +86,11 @@ pipeline {
                 if (env.stage ==~ 'test'){
                     sh '''cd test_env && terraform destroy --auto-approve'''
                 }
-                mail body: "failure", charset: 'UTF-8', mimeType: 'text/html', subject: "CI Failed", to: ${emailAddress}
+                mail body: "failure", charset: 'UTF-8', mimeType: 'text/html', subject: "CI Failed", to: "${emailAddress}"
             }
         }
         success {
-            mail body: "success", charset: 'UTF-8', mimeType: 'text/html', subject: "success CI", to: ${emailAddress}
+            mail body: "success", charset: 'UTF-8', mimeType: 'text/html', subject: "success CI", to: "${emailAddress}"
         }
     }
 }
