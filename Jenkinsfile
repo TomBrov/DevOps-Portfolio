@@ -87,10 +87,11 @@ pipeline {
                     env.stage = 'deploy'
                     deleteDir()
                     withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh """git pull https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git
+                        sh """git clone https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git
+                              cd portfolioGitops
                               sed -i "s/tag: latest/tag: \'${RELEASE_TAG}.${HOTFIX}\'/g" phonebook/values.yaml
                               git commit -am 'v${RELEASE_TAG}.${HOTFIX}'
-                              git push -u https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git"""
+                              git push -u origin"""
                     }
                 }
             }
