@@ -65,6 +65,7 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
+                env.stage = 'tag'
                 withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                     sh """docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
                           docker push gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
@@ -78,9 +79,10 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
+                env.stage = 'deploy'
                 withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                     sh """sed -i "s/tag: latest/tag: \${env.RELEASE_TAG}.\${env.HOTFIX}/g" phonebook/values.yaml
-                          git commit -am 'v${env.RELEASE_TAG}.${env.HOTFIX}'
+                          git commit -am "v${env.RELEASE_TAG}.${env.HOTFIX}"
                           git push -u https://${USERNAME}:${PASSWORD}@github.com/TomBrov/portfolioGitops.git"""
                 }
             }
