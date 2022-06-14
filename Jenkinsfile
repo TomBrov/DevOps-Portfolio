@@ -65,10 +65,12 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
-                sh """docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
-                      docker push gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
-                      git tag ${env.RELEASE_TAG}.${env.HOTFIX}
-                      git push --tags"""
+                withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                    sh """docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
+                          docker push gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
+                          git tag ${env.RELEASE_TAG}.${env.HOTFIX}
+                          git push --tags https://${USERNAME}:${PASSWORD}@github.com/TomBrov/portfolio.git"""
+                }
             }
         }
         stage ('Deploy') {
@@ -76,11 +78,10 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
-                script{
-                   sh '''sed -i "s/tag: latest/tag: \'${env.RELEASE_TAG}.${env.HOTFIX}\'/" phonebook/values.yaml
-                          git remote add gitops <https_URL>
-                          git push -u
-                        '''
+                withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                    sh """sed -i s/tag: latest/tag: \'${env.RELEASE_TAG}.${env.HOTFIX}\'/" phonebook/values.yaml
+                          git push -u https://${USERNAME}:${PASSWORD}@github.com/TomBrov/portfolioGitops.git.git
+                        """
                 }
             }
         }
