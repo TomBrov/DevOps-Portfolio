@@ -88,7 +88,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh """git clone https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git
                               cd portfolioGitops
-                              sed -i "s/tag.*/tag: \${RELEASE_TAG}.${HOTFIX}\/g" phonebook/values.yaml
+                              sed -i "s/tag.*/tag: \${RELEASE_TAG}.${HOTFIX}/g" phonebook/values.yaml
                               git commit -am v${RELEASE_TAG}.${HOTFIX}
                               git push -u origin"""
                     }
