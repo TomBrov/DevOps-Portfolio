@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment{
+        emailAddress = ''
+    }
     stages {
         stage ('ENV Prep') {
             steps {
@@ -7,9 +10,9 @@ pipeline {
                     deleteDir()
                     git branch: env.GIT_BRANCH, credentialsId: 'github', url: 'git@github.com:TomBrov/portfolio.git'
                     if (env.GIT_BRANCH ==~ 'master'){
-                    RELEASE_TAG = sh (script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1 | cut -d "v" -f2""", returnStdout:true).trim()
+                    env.RELEASE_TAG = sh (script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1 | cut -d "v" -f2""", returnStdout:true).trim()
                     sh """echo ${RELEASE_TAG}"""
-                    HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG}.* | wc -l""", returnStdout:true).trim()
+                    env.HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG}.* | wc -l""", returnStdout:true).trim()
                     sh """echo ${HOTFIX}"""
                     }
                     emailAddress = sh(script: """git log | head -4 | grep Author | cut -d '<' -f2 | cut -d '>' -f1""", returnStdout:true).trim()
@@ -62,10 +65,10 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
-                sh '''docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:${RELEASE_TAG}.${HOTFIX}
-                      docker push gcr.io/testing-env-352509/production/backend:$RELEASE_TAG.$HOTFIX
-                      git tag $env.RELEASE_TAG.$HOTFIX
-                      git push --tags'''
+                sh """docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
+                      docker push gcr.io/testing-env-352509/production/backend:${env.RELEASE_TAG}.${env.HOTFIX}
+                      git tag ${env.RELEASE_TAG}.${env.HOTFIX}
+                      git push --tags"""
             }
         }
         stage ('Deploy') {
@@ -74,7 +77,7 @@ pipeline {
             }
             steps {
                 script{
-                    sh '''sed -i "s/tag: latest/tag: \'${RELEASE_TAG}.${HOTFIX}\'/" phonebook/values.yaml
+                   sh '''sed -i "s/tag: latest/tag: \'${env.RELEASE_TAG}.${env.HOTFIX}\'/" phonebook/values.yaml
                           git remote add gitops <https_URL>
                           git push -u
                         '''
