@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        env.stage = ""
-        env.deployer = 'false'
-    }
     stages {
         stage ('ENV Prep') {
             steps {
