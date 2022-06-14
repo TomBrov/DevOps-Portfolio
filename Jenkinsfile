@@ -86,7 +86,7 @@ pipeline {
                     env.stage = 'deploy'
                     withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         sh '''sed -i "s/tag: latest/tag: \\${env.RELEASE_TAG}.\\${env.HOTFIX}/g" phonebook/values.yaml
-                              git commit -am \\"v${env.RELEASE_TAG}.${env.HOTFIX}\\"
+                              git commit -am \\"v\\$env.RELEASE_TAG.\\$env.HOTFIX\\"
                               git push -u https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git'''
                     }
                 }
