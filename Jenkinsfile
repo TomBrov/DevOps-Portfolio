@@ -11,11 +11,12 @@ pipeline {
                     git branch: env.GIT_BRANCH, credentialsId: 'github', url: 'git@github.com:TomBrov/portfolio.git'
                     if (env.GIT_BRANCH ==~ 'master'){
                     env.RELEASE_TAG = sh (script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1 | cut -d "v" -f2""", returnStdout:true).trim()
-                    sh """echo ${RELEASE_TAG}"""
+                    sh """echo ${env.RELEASE_TAG}"""
                     env.HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG}.* | wc -l""", returnStdout:true).trim()
-                    sh """echo ${HOTFIX}"""
+                    sh """echo ${env.HOTFIX}"""
                     }
-                    emailAddress = sh(script: """git log | head -4 | grep Author | cut -d '<' -f2 | cut -d '>' -f1""", returnStdout:true).trim()
+                    env.emailAddress = sh(script: """git log | head -4 | grep Author | cut -d '<' -f2 | cut -d '>' -f1""", returnStdout:true).trim()
+                    sh """echo ${env.emailAddress}"""
                 }
             }
         }
@@ -84,7 +85,7 @@ pipeline {
                 script{
                     env.stage = 'deploy'
                     withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh '''sed -i \\"s/tag: latest/tag: $env.RELEASE_TAG.\$env.HOTFIX/g\\" phonebook/values.yaml
+                        sh '''sed -i "s/tag: latest/tag: \\$RELEASE_TAG.\\$HOTFIX/g" phonebook/values.yaml
                               git commit -am \\"v${env.RELEASE_TAG}.${env.HOTFIX}\\"
                               git push -u https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git'''
                     }
