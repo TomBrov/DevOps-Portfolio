@@ -10,7 +10,7 @@ pipeline {
                     RELEASE_TAG = sh (script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1 | cut -d "v" -f2""", returnStdout:true).trim()
                     HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG} | wc -l""", returnStdout:true).trim()
                     }
-                    emailAddress = sh(script: """git log | head -4 | grep Author | cut -d \\"<\\" -f2 | cut -d \\">\\" -f1""", returnStdout:true).trim()
+                    emailAddress = sh(script: """git log | head -4 | grep Author | cut -d '<' -f2 | cut -d '>' -f1""", returnStdout:true).trim()
                 }
             }
         }
@@ -60,7 +60,7 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
-                sh '''docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:$RELEASE_TAG.$HOTFIX
+                sh '''docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:${RELEASE_TAG}.${HOTFIX}
                       docker push gcr.io/testing-env-352509/production/backend:$RELEASE_TAG.$HOTFIX
                       git tag $env.RELEASE_TAG.$HOTFIX
                       git push --tags'''
@@ -72,9 +72,8 @@ pipeline {
             }
             steps {
                 script{
-
                     sh '''sed -i "s/tag: latest/tag: \'${RELEASE_TAG}.${HOTFIX}\'/" phonebook/values.yaml
-                          git remote add gitops
+                          git remote add gitops <https_URL>
                           git push -u
                         '''
                 }
@@ -87,11 +86,11 @@ pipeline {
                 if (env.stage ==~ 'test'){
                     sh '''cd test_env && terraform destroy --auto-approve'''
                 }
-                mail body: "failure", charset: 'UTF-8', mimeType: 'text/html', subject: "CI Failed", to: "${emailAddress}"
+                mail body: "failure", charset: 'UTF-8', mimeType: 'text/html', subject: "CI Failed", to: ${emailAddress}
             }
         }
         success {
-            mail body: "success", charset: 'UTF-8', mimeType: 'text/html', subject: "success CI", to: "${emailAddress}"
+            mail body: "success", charset: 'UTF-8', mimeType: 'text/html', subject: "success CI", to: ${emailAddress}"
         }
     }
 }
