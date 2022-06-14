@@ -10,16 +10,34 @@ pipeline {
                 script{
                     deleteDir()
                     git branch: env.GIT_BRANCH, credentialsId: 'github', url: 'git@github.com:TomBrov/portfolio.git'
+                    if (env.GIT_BRANCH ==~ 'master'){
+                    RELEASE_TAG = sh (script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1 | cut -d "v" -f2""", returnStdout:true).trim()
+                    HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG} | wc -l""", returnStdout:true).trim()
+                    }
+                    emailAddress = sh(script: """git log | head -4 | grep Author | cut -d \\"<\\" -f2 | cut -d \\">\\" -f1""", returnStdout:true).trim()
                 }
             }
         }
         stage ('Build') {
             steps {
-                sh '''cd application
-                docker build -t gcr.io/testing-env-352509/testing/backend:latest .
-                docker push gcr.io/testing-env-352509/testing/backend:latest
-                cd ..
-                zip -r test_env/app.zip application/'''
+                script{
+                    if (env.GIT_BRANCH ==~ 'master'){
+                        sh '''cd application
+                        docker build -t gcr.io/testing-env-352509/testing/backend:latest .
+                        docker push gcr.io/testing-env-352509/testing/backend:latest
+                        cd ..
+                        zip -r test_env/app.zip application/'''
+                    } else {
+                        sh '''cd application
+                        docker build -t gcr.io/testing-env-352509/$env.GIT_BRANCH/backend:latest .
+                        docker push gcr.io/testing-env-352509/$env.GIT_BRANCH/backend:latest
+                        sed -i "s/testing/$env.GIT_BRANCH/" application/docker-compose.yaml
+                        cd ..
+                        zip -r test_env/app.zip application/'''
+                    }
+
+                }
+
             }
         }
         stage ('Test') {
@@ -46,8 +64,10 @@ pipeline {
                 expression{env.GIT_BRANCH ==~ "master"}
             }
             steps {
-                sh '''docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:latest
-                      docker push gcr.io/testing-env-352509/production/backend:latest'''
+                sh '''docker tag gcr.io/testing-env-352509/testing/backend:latest gcr.io/testing-env-352509/production/backend:$RELEASE_TAG.$HOTFIX
+                      docker push gcr.io/testing-env-352509/production/backend:$RELEASE_TAG.$HOTFIX
+                      git tag $env.RELEASE_TAG.$HOTFIX
+                      git push --tags'''
             }
         }
         stage ('Deploy') {
@@ -56,6 +76,11 @@ pipeline {
             }
             steps {
                 script{
+
+                    sh '''sed -i "s/tag: latest/tag: \'${RELEASE_TAG}.${HOTFIX}\'/" phonebook/values.yaml
+                          git remote add gitops
+                          git push -u
+                        '''
                 }
             }
         }
@@ -63,13 +88,14 @@ pipeline {
     post{
         failure{
             script{
-                if(env.stage ==~ 'test'){
+                if (env.stage ==~ 'test'){
                     sh '''cd test_env && terraform destroy --auto-approve'''
                 }
+                mail body: "failure", charset: 'UTF-8', mimeType: 'text/html', subject: "CI Failed", to: "${emailAddress}"
             }
         }
-        success{
-            sh '''echo yes'''
+        success {
+            mail body: "success", charset: 'UTF-8', mimeType: 'text/html', subject: "success CI", to: "${emailAddress}"
         }
     }
 }
