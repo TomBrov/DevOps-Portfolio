@@ -8,7 +8,9 @@ pipeline {
                     git branch: env.GIT_BRANCH, credentialsId: 'github', url: 'git@github.com:TomBrov/portfolio.git'
                     if (env.GIT_BRANCH ==~ 'master'){
                     RELEASE_TAG = sh (script: """git log --format="medium" -1 ${GIT_COMMIT} | tail -1 | cut -d "v" -f2""", returnStdout:true).trim()
+                    sh """echo ${RELEASE_TAG}"""
                     HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG}.* | wc -l""", returnStdout:true).trim()
+                    sh """echo ${HOTFIX}"""
                     }
                     emailAddress = sh(script: """git log | head -4 | grep Author | cut -d '<' -f2 | cut -d '>' -f1""", returnStdout:true).trim()
                 }
