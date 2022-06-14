@@ -79,9 +79,8 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                    sh """sed -i s/tag: latest/tag: \'${env.RELEASE_TAG}.${env.HOTFIX}\'/" phonebook/values.yaml
-                          git push -u https://${USERNAME}:${PASSWORD}@github.com/TomBrov/portfolioGitops.git.git
-                        """
+                    sh """sed -i "s/tag: latest/tag: ${env.RELEASE_TAG}.${env.HOTFIX}/" phonebook/values.yaml
+                          git push -u https://${USERNAME}:${PASSWORD}@github.com/TomBrov/portfolioGitops.git.git"""
                 }
             }
         }
