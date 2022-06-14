@@ -14,6 +14,7 @@ pipeline {
                     sh """echo ${env.RELEASE_TAG}"""
                     env.HOTFIX = sh (script: """git tag  | grep ${RELEASE_TAG}.* | wc -l""", returnStdout:true).trim()
                     sh """echo ${env.HOTFIX}"""
+
                     }
                     env.emailAddress = sh(script: """git log | head -4 | grep Author | cut -d '<' -f2 | cut -d '>' -f1""", returnStdout:true).trim()
                     sh """echo ${env.emailAddress}"""
@@ -85,9 +86,9 @@ pipeline {
                 script{
                     env.stage = 'deploy'
                     withCredentials([usernamePassword(credentialsId: 'GithubHTTP', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        sh '''sed -i "s/tag: latest/tag: \\${env.RELEASE_TAG}.\\${env.HOTFIX}/g" phonebook/values.yaml
-                              git commit -am \\"v\\$env.RELEASE_TAG.\\$env.HOTFIX\\"
-                              git push -u https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git'''
+                        sh """sed -i "s/tag: latest/tag: \'${$env.RELEASE_TAG}.${env.HOTFIX}\'/g" phonebook/values.yaml
+                              git commit -am 'v${env.RELEASE_TAG}.${env.HOTFIX}'
+                              git push -u https://$USERNAME:$PASSWORD@github.com/TomBrov/portfolioGitops.git"""
                     }
                 }
             }
