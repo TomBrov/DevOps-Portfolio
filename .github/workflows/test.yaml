@@ -23,7 +23,7 @@ jobs:
           with:
             compose-file: "./application/docker-compose.yml"
             up-flags:
-              - --build
+              - "--build"
   tests:
     runs-on: ubuntu-latest
     container:
