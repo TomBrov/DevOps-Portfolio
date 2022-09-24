@@ -20,7 +20,7 @@ jobs:
           compose-file: "docker-compose.yml"
   tests:
     runs-on: ubuntu-latest
-    needs: deployment
+    needs: build
     steps:
       - name: build test container
         run: docker build -t api-test .
