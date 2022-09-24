@@ -12,7 +12,7 @@ on:
 jobs:
   run-shell-commands:
     runs-on: ubuntu-latest
-    if: ${{ github.ref }} == "release/*"
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -37,4 +37,4 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: "Github Actions Slackbot"
           SLACK_TITLE: "Workflow number ${{ github.run_number }}"
-          SLACK_MESSAGE: "Build failed on attempt #${{ github.run_attempt }}"
+          SLACK_MESSAGE: "CI failed on attempt #${{ github.run_attempt }}"
