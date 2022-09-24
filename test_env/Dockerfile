@@ -1,5 +1,5 @@
 FROM python:alpine3.16
 WORKDIR /app
-COPY  requirements.txt ./
+COPY  requirements.txt entrypoint.sh ./
 RUN pip install -r requirements.txt
-CMD ["python3", "E2E.py", $1]
+CMD ["/bin/sh", "entrypoint.sh"]
