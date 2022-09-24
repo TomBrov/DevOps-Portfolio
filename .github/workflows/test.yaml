@@ -22,5 +22,7 @@ jobs:
         run: docker ps
       - name: build test container
         run: cd test_env && docker build -t api-test .
+      - name: reach localhost
+        run: curl localhost:80
       - name: run E2E
         run: docker run api-test localhost
