@@ -33,7 +33,8 @@ def get_one(ip, uid):
 
 
 if __name__ == '__main__':
-    host = sys.argv[1]
+    hostname = sys.argv[1]
+    host = f"{hostname}:80"
     people_list = [{'Name': 'Tom Brovender', 'Phone': '0508710417', "Address": 'Har Shaul 907'},
                    {'Name': 'Eden Altman', 'Phone': '0546648749', "Address": 'Gary Bartiani 5'}]
     for person in people_list:

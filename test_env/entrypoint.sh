@@ -1,5 +1,5 @@
 #!/bin/sh
 
-ARG=$1
+host=$1
 
-python3 E2E.py $ARG
+python3 E2E.py host
