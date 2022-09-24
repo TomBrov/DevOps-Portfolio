@@ -27,7 +27,7 @@ jobs:
     container:
       image: python:3.11-rc-alpine3.16
       volumes:
-        - ./test_env/:/test
+        - ./test_env:/test
     needs: deployment
     steps:
       - name: move to container folder
