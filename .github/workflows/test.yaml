@@ -19,6 +19,6 @@ jobs:
         with:
           compose-file: "./application/docker-compose.yaml"
       - name: build test container
-        run: docker build -t api-test .
+        run: cd test_env && docker build -t api-test .
       - name: run E2E
         run: docker run api-test localhost:80
