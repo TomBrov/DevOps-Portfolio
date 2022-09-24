@@ -15,9 +15,12 @@ jobs:
           ref: Actions
       - name: build images
         run: cd application && docker build -t test_backend .
+      - name: Where am I?
+        run: pwd
       - uses: isbang/compose-action@v1.2.0
         with:
           compose-file: "./application/docker-compose.yml"
+
   tests:
     runs-on: ubuntu-latest
     needs: build
