@@ -19,7 +19,7 @@ jobs:
         with:
           compose-file: "./application/docker-compose.yaml"
       - name: show services
-      - run: docker ps
+        run: docker ps
       - name: build test container
         run: cd test_env && docker build -t api-test .
       - name: run E2E
