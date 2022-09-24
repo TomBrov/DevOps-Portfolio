@@ -18,11 +18,6 @@ jobs:
       - uses: isbang/compose-action@v1.2.0
         with:
           compose-file: "./application/docker-compose.yaml"
-
-  tests:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: build test container
         run: docker build -t api-test .
       - name: run E2E
