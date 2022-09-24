@@ -9,7 +9,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
   backend:
-    image: gcr.io/testing-env-352509/testing/backend:latest
+    build: .
     container_name: backend
     environment:
       - MONGODB_URI=mongodb://root:root@mongodb:27017

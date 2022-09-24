@@ -19,8 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: where am I
-        run: cd application && docker-compose up -d
+      - uses: isbang/compose-action@v1.2.0
+          with:
+            compose-file: "./application/docker-compose.yml"
+            up-flags:
+              - --build
   tests:
     runs-on: ubuntu-latest
     container:
