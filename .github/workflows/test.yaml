@@ -20,7 +20,7 @@ jobs:
     needs: build
     steps:
       - name: where am I
-        run: cd applications && docker-compose up -d
+        run: cd application && docker-compose up -d
   tests:
     runs-on: ubuntu-latest
     container:
