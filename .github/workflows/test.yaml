@@ -1,0 +1,23 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          ref: Actions
+      - name: build images
+        run: cd application && docker build -t test_backend .
+  deployment:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: where am I
+        run: pwd

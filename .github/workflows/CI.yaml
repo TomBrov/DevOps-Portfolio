@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - Actions
+  workflow_run:
+    workflows: [ "Build and Test" ]
+    types: [ completed ]
+
+
+jobs:
+  run-shell-commands:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref }} == "release/*"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+  slack-notifications:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: run-shell-commands
+    steps:
+      - name: send a slack SUCCESS message
+        if: needs.run-shell-commands.result == 'success'
+        uses: docker://technosophos/slack-notify
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: "Github Actions Slackbot"
+          SLACK_TITLE: "Workflow number ${{ github.run_number }}"
+          SLACK_MESSAGE: "Finished Successfully on Attempt #${{ github.run_attempt }}"
+      - name: send a slack FAILED message
+        if: needs.run-shell-commands.result != 'success'
+        uses: docker://technosophos/slack-notify
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: "Github Actions Slackbot"
+          SLACK_TITLE: "Workflow number ${{ github.run_number }}"
+          SLACK_MESSAGE: "Build failed on attempt #${{ github.run_attempt }}"

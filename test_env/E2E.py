@@ -33,27 +33,27 @@ def get_one(ip, uid):
 
 
 if __name__ == '__main__':
-    ip = sys.argv[1]
+    host = sys.argv[1]
     people_list = [{'Name': 'Tom Brovender', 'Phone': '0508710417', "Address": 'Har Shaul 907'},
                    {'Name': 'Eden Altman', 'Phone': '0546648749', "Address": 'Gary Bartiani 5'}]
     for person in people_list:
-        add_one(person, ip)
-    people = get_all(ip)
+        add_one(person, host)
+    people = get_all(host)
     if not people:
         print("ERROR: Test failed - get wasn't successful")
         exit(1)
     uid = people[0]['_id']
     param = 'Phone'
     parameter_value = people[1][param]
-    update_one(ip, uid, param, parameter_value)
-    person = get_one(ip, uid)
+    update_one(host, uid, param, parameter_value)
+    person = get_one(host, uid)
     if parameter_value != person[param]:
         print("ERROR: Test failed - update wasn't successful")
         exit(1)
     for person in people:
         uid = person['_id']
-        delete_one(uid, ip)
-    people = get_all(ip)
+        delete_one(uid, host)
+    people = get_all(host)
     if people:
         print("ERROR: Test failed - deletion wasn't successful")
         exit(1)
