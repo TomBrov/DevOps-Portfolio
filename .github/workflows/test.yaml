@@ -20,4 +20,18 @@ jobs:
     needs: build
     steps:
       - name: where am I
-        run: pwd
+        run: cd applications && docker-compose up -d
+  tests:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.11-rc-alpine3.16
+      volumes:
+        - ./test_env/:/test
+    needs: deployment
+    steps:
+      - name: move to container folder
+        run: cd /test
+      - name: pip install
+        run: pip install -R requirements.txt
+      - name: run E2E
+        run: python E2E.py localhost:80
