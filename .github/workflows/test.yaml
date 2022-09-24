@@ -21,4 +21,4 @@ jobs:
       - name: build test container
         run: cd test_env && docker build -t api-test .
       - name: run E2E
-        run: docker run api-test localhost
+        run: docker run api-test 127.0.0.1
