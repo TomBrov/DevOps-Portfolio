@@ -1,4 +1,4 @@
-name: CI
+name: CI Notify
 
 on:
   push:
@@ -10,20 +10,13 @@ on:
 
 
 jobs:
-  run-shell-commands:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
   slack-notifications:
     runs-on: ubuntu-latest
     if: ${{ always() }}
     needs: run-shell-commands
     steps:
       - name: send a slack SUCCESS message
-        if: needs.run-shell-commands.result == 'success'
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         uses: docker://technosophos/slack-notify
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
