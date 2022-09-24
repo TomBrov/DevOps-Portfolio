@@ -18,7 +18,9 @@ jobs:
       - uses: isbang/compose-action@v1.2.0
         with:
           compose-file: "./application/docker-compose.yaml"
+      - name: show services
+      - run: docker ps
       - name: build test container
         run: cd test_env && docker build -t api-test .
       - name: run E2E
-        run: docker run api-test 127.0.0.1
+        run: docker run api-test localhost

@@ -8,12 +8,10 @@ on:
     workflows: [ "Build and Test" ]
     types: [ completed ]
 
-
 jobs:
   slack-notifications:
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: run-shell-commands
     steps:
       - name: send a slack SUCCESS message
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
