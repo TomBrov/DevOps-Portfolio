@@ -22,8 +22,6 @@ jobs:
       - uses: isbang/compose-action@v1.2.0
         with:
           compose-file: "./application/docker-compose.yml"
-          up-flags:
-            - "--build"
   tests:
     runs-on: ubuntu-latest
     container:

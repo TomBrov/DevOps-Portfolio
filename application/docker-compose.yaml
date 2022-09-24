@@ -9,7 +9,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
   backend:
-    build: .
+    image: test_backend
     container_name: backend
     environment:
       - MONGODB_URI=mongodb://root:root@mongodb:27017
